@@ -21,12 +21,12 @@ phases:
       - echo "dependencies installed"
   build:
     commands:
-      - docker build . -t video123/netflix-react-app:latest --build-arg TMDB_V3_API_KEY=$KEY
+      - docker build . -t sunil09/video123:latest --build-arg TMDB_V3_API_KEY=$KEY
   post_build:
     commands:
       - echo "waiting right now"
       - docker login -u $USERNAME -p $PASSWORD
-      - docker push video123/netflix-react-app:latest
+      - docker push sunil09/video123:latest
 artifacts:
   files:
     - '**/*'
