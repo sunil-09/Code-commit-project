@@ -47,8 +47,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}    # SonarCloud token
         run: |
           npx sonar-scanner \
-            -Dsonar.projectKey=sunil-09 \
-            -Dsonar.organization=Code-commit-project \
+            -Dsonar.projectKey=Code-commit-project \
+            -Dsonar.organization=sunil-09 \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
             -Dsonar.sources=src \
