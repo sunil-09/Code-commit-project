@@ -1,42 +1,51 @@
-name: SonarQube
-
+name: SonarCloud
 on:
   push:
     branches:
       - main
-      
+      - develop
+  pull_request:
+    types: [opened, synchronize, reopened]
+
 jobs:
-  sonarQubeAnalysis:
-    name: SonarQube Analysis
+  build:
+    name: Build and SonarCloud Analysis
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout your code
-      - name: Checkout code
+      - name: Checkout the code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      # Step 2: Set up Node.js (for React)
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'
 
-      # Step 3: Install dependencies
       - name: Install dependencies
-        run: npm install
-
-      # Step 4: Build your React app (optional if needed for analysis)
-      - name: Build React App
+        run: |
+          npm install
+          
+      - name: Build project
         run: npm run build
 
-      # Step 5: SonarQube Scanner (use your SonarQube credentials)
-      - name: Run SonarQube Scanner
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+
+      - name: SonarCloud Scan
         env:
-          SONAR_HOST_URL: ${{ secrets.SONARQUBE_HOST_URL }}    # Add this to your GitHub Secrets
-          SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}          # Add this to your GitHub Secrets
+          GITHUB_TOKEN: ${{ secrets.ADDED_GITHUB_TOKEN }} # Required for PR checks
+          SONAR_TOKEN: ${{ secrets.ADDED_SONAR_TOKEN }}    # SonarCloud token
         run: |
           npx sonar-scanner \
-            -Dsonar.projectKey=your-project-key \
+            -Dsonar.projectKey=sunil-09 \
+            -Dsonar.organization=Code-commit-project \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=${{ secrets.ADDED_SONAR_TOKEN }} \
             -Dsonar.sources=src \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.login=$SONAR_TOKEN
+            -Dsonar.tests=src \
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
