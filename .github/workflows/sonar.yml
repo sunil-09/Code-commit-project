@@ -17,6 +17,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up Java 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -25,7 +30,7 @@ jobs:
       - name: Install dependencies
         run: |
           npm install
-          
+
       - name: Build project
         run: npm run build
 
@@ -37,7 +42,7 @@ jobs:
 
       - name: SonarCloud Scan
         env:
-          GITHUB_TOKEN: ${{ secrets.ADDED_GITHUB_TOKEN }} # Required for PR checks
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use built-in GitHub token
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}    # SonarCloud token
         run: |
           npx sonar-scanner \
