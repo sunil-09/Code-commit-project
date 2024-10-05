@@ -1,0 +1,47 @@
+name: SonarQube Code Analysis
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  sonarQubeAnalysis:
+    name: SonarQube Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout your code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js (for React)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Step 4: Build your React app (optional if needed for analysis)
+      - name: Build React App
+        run: npm run build
+
+      # Step 5: SonarQube Scanner (use your SonarQube credentials)
+      - name: Run SonarQube Scanner
+        env:
+          SONAR_HOST_URL: ${{ secrets.SONARQUBE_HOST_URL }}    # Add this to your GitHub Secrets
+          SONAR_TOKEN: ${{ secrets.SONARQUBE_TOKEN }}          # Add this to your GitHub Secrets
+        run: |
+          npx sonar-scanner \
+            -Dsonar.projectKey=your-project-key \
+            -Dsonar.sources=src \
+            -Dsonar.host.url=$SONAR_HOST_URL \
+            -Dsonar.login=$SONAR_TOKEN
