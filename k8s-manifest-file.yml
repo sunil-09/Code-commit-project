@@ -1,0 +1,87 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: streming-service
+  namespace: demo-pipeline
+  labels:
+    app: strming-api
+spec:
+  selector:
+    app: streming-service-selector
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5001
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: strming-deployment
+  namespace: demo-pipeline
+  labels:
+    app: strming-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: strming-api
+  template:
+    metadata:
+      labels:
+        app: strming-api
+    spec:
+      serviceAccountName: healthsa
+      containers:
+      - name: strming-api
+        image: 376129838681.dkr.ecr.us-east-2.amazonaws.com/pipeline-dock:IMAGETAG
+        ports:
+        - containerPort: 5001
+        resources:
+          requests:
+            memory: "0.5Gi"
+            cpu: "0.5"
+          limits:
+            memory: "2Gi"
+            cpu: "2"
+        # env:
+        #   - name: ASPNETCORE_ENVIRONMENT
+        #     value: Development
+---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   annotations:
+#     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+#     alb.ingress.kubernetes.io/backend-protocol: HTTP
+#     alb.ingress.kubernetes.io/scheme: internal
+#     alb.ingress.kubernetes.io/subnets: 	subnet-0b2e3954149063075,subnet-00ebb6a0532b292fe,subnet-0378941f6f8c25e91
+#     alb.ingress.kubernetes.io/load-balancer-name: helios-dev-health-api-lb
+#     alb.ingress.kubernetes.io/target-type: ip
+#     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-2:375611915274:certificate/1887fc9d-c7b8-4371-94c7-77280eec9793
+#     alb.ingress.kubernetes.io/healthcheck-path: /health/live
+#     alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+#     alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+#   finalizers:
+#   - ingress.k8s.aws/resources
+#   labels:
+#     app: strming-api
+#   name: strming-ingress
+#   namespace: demo-pipeline
+# spec:
+#   tls:
+#     - hosts:
+#         - health-api.dev.sunnyrewards.com
+#       secretName: sunnyrewardsstardevqacert
+#   ingressClassName: alb
+#   rules:
+#   - http:
+#       paths:
+#       - backend:
+#           service:
+#             name: 
+#             port:
+#               number: 80
+#         path: /*
+#         pathType: ImplementationSpecific
