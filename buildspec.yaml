@@ -27,7 +27,7 @@ phases:
     commands:
       - echo Updating Kubernetes deployment...
       - aws eks update-kubeconfig --name deploy-cluster --region us-east-2
-      - kubectl apply -f k8s-manifest-file.yml
+      - kubectl apply -f k8s-manifest-file.yaml
       - echo Deployment complete.
 
 artifacts:
