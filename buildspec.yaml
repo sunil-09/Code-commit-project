@@ -23,7 +23,7 @@ phases:
       - docker push $REPOSITORY_URI:$IMAGE_TAG
       - echo Pushed Docker image to ECR.
 
-  deploy:
+  build:
     commands:
       - echo Updating Kubernetes deployment...
       - aws eks update-kubeconfig --name deploy-cluster --region us-east-2
