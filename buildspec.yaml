@@ -24,10 +24,11 @@ phases:
       - echo Pushed Docker image to ECR.
 
   build:
-    commands:
+   commands:
       - echo Updating Kubernetes deployment...
       - aws eks update-kubeconfig --name deploy-cluster --region us-east-2
-      - kubectl apply -f k8s-strming.yaml
+      - kubectl get nodes  # Verify that kubeconfig is working
+      - kubectl apply -f k8s-strming.yaml --v=9  # Apply manifest with verbose output
       - echo Deployment complete.
 
 artifacts:
