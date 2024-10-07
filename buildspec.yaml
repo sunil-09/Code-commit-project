@@ -20,7 +20,7 @@ phases:
   post_build:
     commands:
       - echo Pushing Docker image to ECR...
-      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - docker push $ECR_REPOSITORY_URI:$IMAGE_TAG
       - echo Pushed Docker image to ECR.
 
   build:
