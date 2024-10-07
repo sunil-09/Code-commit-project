@@ -1,35 +1,36 @@
 version: 0.2
 
-env:
-  parameter-store:
-    USERNAME: /myapp/docker-credentials/username
-    PASSWORD: /myapp/docker-credentials/password
-    KEY:  /myapp/api/key
-
-        
 phases:
-  install:
-    runtime-versions:
-      nodejs: latest
-    commands:
-      - node --version
-      - echo "installed node "
-    # steps:
   pre_build:
     commands:
-      - npm install
-      - echo "dependencies installed"
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - $(aws ecr get-login-password --region us-east-2) | docker login --username AWS --password-stdin 376129838681.dkr.ecr.us-east-2.amazonaws.com
+      - REPOSITORY_URI=376129838681.dkr.ecr.us-east-2.amazonaws.com/pipeline-dock
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - echo REPOSITORY_URI=$REPOSITORY_URI
+      - echo IMAGE_TAG=$IMAGE_TAG
+
   build:
     commands:
-      - docker build . -t sunil09/video123:latest --build-arg TMDB_V3_API_KEY=$KEY
+      - echo Building Docker image...
+      - docker build -t $REPOSITORY_URI:$IMAGE_TAG .
+      - echo Docker image built.
+
   post_build:
     commands:
-      - echo "waiting right now"
-      - docker login -u $USERNAME -p $PASSWORD
-      - docker push sunil09/video123:latest
+      - echo Pushing Docker image to ECR...
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - echo Pushed Docker image to ECR.
+
+  # deploy:
+  #   commands:
+  #     - echo Updating Kubernetes deployment...
+  #     - aws eks update-kubeconfig --name deploy-cluster --region us-east-2
+  #     - kubectl apply -f <your-manifest-file.yaml>
+  #     - echo Deployment complete.
+
 artifacts:
   files:
     - '**/*'
-  base-directory: "./"
-  name: build-artifact-name
-  discard-paths: no
+  discard-paths: yes
