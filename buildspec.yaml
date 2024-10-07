@@ -5,7 +5,7 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - aws --version
-      - $(aws ecr get-login-password --region us-east-2) | docker login --username AWS --password-stdin 376129838681.dkr.ecr.us-east-2.amazonaws.com
+      - aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin 376129838681.dkr.ecr.us-east-2.amazonaws.com
       - REPOSITORY_URI=376129838681.dkr.ecr.us-east-2.amazonaws.com/pipeline-dock
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - echo REPOSITORY_URI=$REPOSITORY_URI
